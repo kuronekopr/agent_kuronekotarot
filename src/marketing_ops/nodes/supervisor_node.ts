@@ -1,0 +1,50 @@
+import { HumanMessage, SystemMessage, AIMessage } from "@langchain/core/messages";
+import { ChatOpenAI } from "@langchain/openai";
+import * as fs from "fs";
+import * as path from "path";
+import { MarketingOpsState } from "../state";
+import { z } from "zod";
+
+const getPrompt = (filename: string) => {
+    return fs.readFileSync(path.join(__dirname, "../../marketing_ops/prompts", filename), "utf-8");
+};
+
+// Supervisor Node (Master Agent)
+// Decides which agent to call next or if the process is finished
+export const supervisorNode = async (state: MarketingOpsState) => {
+    const model = new ChatOpenAI({ model: "gpt-4o", temperature: 0 });
+    const systemPrompt = getPrompt("master_prompt.md");
+
+    const supervisorSchema = z.object({
+        next: z.enum(["creative", "analyst", "community", "ads", "FINISH"]),
+        comment: z.string().optional().describe("Instructions for the next agent or summary"),
+    });
+
+    const hasFinished = state.messages.length > 10; // Simple guardrail
+    if (hasFinished) {
+        return { next: "FINISH" };
+    }
+
+    // Fallback to JSON mode mainly for robustness against API strictness
+    const response = await model.invoke([
+        new SystemMessage(systemPrompt + "\n\nIMPORTANT: Respond ONLY with a valid JSON object. Format: { \"next\": \"creative\" | \"analyst\" | \"community\" | \"ads\" | \"FINISH\", \"comment\": \"reason...\" }"),
+        ...state.messages,
+        new HumanMessage("状況を確認し、次の指示を出してください。もし十分ならFINISHとしてください。")
+    ]);
+
+    let parsed;
+    try {
+        const text = typeof response.content === "string" ? response.content : "";
+        // Remove markdown code blocks if present
+        const jsonText = text.replace(/```json/g, "").replace(/```/g, "").trim();
+        parsed = JSON.parse(jsonText);
+    } catch (e) {
+        console.error("JSON Parse Error", e);
+        return { next: "FINISH" }; // Fail safe
+    }
+
+    return {
+        next: parsed.next || "FINISH",
+        messages: [new AIMessage({ content: `[Supervisor]: ${parsed.next} - ${parsed.comment || ''}` })]
+    };
+};
