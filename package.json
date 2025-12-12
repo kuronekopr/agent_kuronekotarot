@@ -1,13 +1,15 @@
 {
   "name": "agent_kuronekotarot",
   "version": "1.0.0",
-  "description": "��#\u0000 \u0000a\u0000g\u0000e\u0000n\u0000t\u0000_\u0000k\u0000u\u0000r\u0000o\u0000n\u0000e\u0000k\u0000o\u0000t\u0000a\u0000r\u0000o\u0000t\u0000\r\u0000 \u0000",
+  "description": "#\u0000 \u0000a\u0000g\u0000e\u0000n\u0000t\u0000_\u0000k\u0000u\u0000r\u0000o\u0000n\u0000e\u0000k\u0000o\u0000t\u0000a\u0000r\u0000o\u0000t\u0000\r\u0000 \u0000",
   "main": "index.js",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
   },
   "repository": {
     "type": "git",
@@ -29,8 +31,10 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20251212.0",
     "@types/node": "^25.0.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "wrangler": "^4.54.0"
   }
 }

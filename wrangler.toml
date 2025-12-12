@@ -1,0 +1,12 @@
+name = "agent-marketing-ops"
+main = "src/worker.ts"
+compatibility_date = "2024-09-23"
+node_compat = true
+
+# Cron Trigger: Run every day at 00:00 UTC (09:00 JST)
+[triggers]
+crons = ["0 0 * * *"]
+
+[vars]
+# Environment variables can be set here or via `wrangler secret put`
+# OPENAI_API_KEY is expected to be a secret
