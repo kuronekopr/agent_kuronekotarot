@@ -7,6 +7,8 @@ compatibility_flags = ["nodejs_compat"]
 [triggers]
 crons = ["0 0 * * *"]
 
-[vars]
-# Environment variables can be set here or via `wrangler secret put`
-# OPENAI_API_KEY is expected to be a secret
+[[d1_databases]]
+binding = "DB"
+database_name = "kuroneko-db"
+database_id = "f9e970f9-c3f1-461e-b41b-ca906704ef04"
+
