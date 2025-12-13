@@ -4,10 +4,10 @@
 「占い」を前面に出しすぎず、少しミステリアスで、でも頼りになる雰囲気を目指します。
 
 ## 共通設定
-- **Display Name (表示名)**: 黒猫タロット 🐈‍⬛ (または `Black Cat Tarot`)
-- **ID**: `@kuronekotarot`
+- **Display Name (表示名)**: 黒猫タロット【気分AIマジカルナビ】
+- **ID**: `@blackcattarot01` (全SNS共通)
 - **Icon**: 黒猫のシルエット、または暗闇に光る金色の目。背景は深いミッドナイトブルーか黒。
-- **Link**: (アプリやLPのURL。まだなければ `https://kuronekotarot.com` などの予定地)
+- **Link**: `https://kuronekotarot.com`
 
 ---
 
@@ -42,7 +42,7 @@ AI黒猫が、あなたの気分を「はみだし思考」へナビゲート�
 毎日の魔法（ヒント）をストーリーズで配信中。
 .
 ▼ 今日のカードを引く
-[Link]
+https://kuronekotarot.com
 
 ---
 
