@@ -2,33 +2,65 @@ import { HumanMessage, SystemMessage, AIMessage } from "@langchain/core/messages
 import { ChatOpenAI } from "@langchain/openai";
 import { MarketingOpsState } from "../state";
 import { AGENT_C_COMMUNITY_PROMPT } from "../prompts";
+import { TAROT_CARDS } from "../tarot_data";
 
 // Agent C: Community Node
 export const communityNode = async (state: MarketingOpsState) => {
     const model = new ChatOpenAI({ model: "gpt-4o", temperature: 0.7 });
     const systemPrompt = AGENT_C_COMMUNITY_PROMPT;
 
-    // Extract UGC from state or fallback (for testing without full graph flow)
+    // Check if we are in "Manual Reply Mode"
     const lastMessage = state.messages[state.messages.length - 1];
-    const inputContent = typeof lastMessage.content === "string" ? lastMessage.content : "ユーザー投稿: 『今日黒猫タロット引いたら死神だった...怖』";
+    const content = typeof lastMessage.content === "string" ? lastMessage.content : "";
 
-    const jsonInstruction = `
-    IMPORTANT: Analyze the user input and output ONLY a valid JSON object matching this structure:
-    {
-      "sentiment": "positive" | "neutral" | "negative" | "emergency",
-      "category": "question" | "feedback" | "sharing_result" | "complaint",
-      "risk_score": number (1-10, 10 is immediate danger),
-      "draft_reply": "string (The reply text from Kuroneko)"
+    // 1. Tarot Selection Logic helpers
+    const tarotListStr = TAROT_CARDS.join(", ");
+
+    // 2. Define specific instruction for this turn
+    // If input starts with "Reply to:", we treat it as a reply task.
+    // Otherwise standard community logic (mock UGC analysis).
+    let userInstruction = "";
+
+    if (content.startsWith("Reply to:")) {
+        userInstruction = `
+         TASK: Analyze the following user comment and generate a reply with a Tarot reading.
+         
+         USER COMMENT: "${content.replace("Reply to:", "").trim()}"
+         
+         AVAILABLE CARDS: [${tarotListStr}]
+         
+         INSTRUCTIONS:
+         1. Create a "Client Mood" profile based on the comment.
+         2. Select ONE card from AVAILABLE CARDS that fits or heals this mood.
+         3. Generate a reply.
+         
+         IMPORTANT: Output ONLY a valid JSON object:
+         {
+           "mood_analysis": "string (The analyzed mood)",
+           "selected_card": "string (Exact name from the list)",
+           "reply_text": "string (The actual reply text for TikTok)",
+           "reasoning": "string (Why this card?)"
+         }
+         `;
+    } else {
+        // Standard logic (fallback or generic UGC analysis)
+        userInstruction = `
+        Analyze the following UGC and generate a reply.
+        UGC: "${content}"
+        
+        IMPORTANT: Output ONLY a valid JSON object:
+        {
+          "sentiment": "positive" | "neutral" | "negative",
+          "category": "question" | "feedback" | "sharing_result",
+          "draft_reply": "string"
+        }
+        `;
     }
-    If risk_score is >= 8, draft_reply should be a supportive, safety-first message (or suggestion to seek help), avoiding playful tone.
-    Do not wrap in markdown code blocks.
-    `;
 
     try {
         const response = await model.invoke([
-            new SystemMessage(systemPrompt + jsonInstruction),
-            new HumanMessage(`以下のUGCを分析し、返信を作成してください: ${inputContent}`),
-            ...state.messages
+            new SystemMessage(systemPrompt),
+            new HumanMessage(userInstruction)
         ]);
 
         const text = typeof response.content === "string" ? response.content : "";
@@ -37,8 +69,8 @@ export const communityNode = async (state: MarketingOpsState) => {
 
         return {
             messages: [new AIMessage(JSON.stringify(parsed, null, 2))],
-            // We could store this in a specific state field if needed, but for now generic message is fine or maybe 'community_report'
-            // For now, let's just log it in messages for the supervisor.
+            // We use 'community_content' to distinguish from creative posts
+            community_content: JSON.stringify(parsed, null, 2),
             next: "supervisor",
         };
     } catch (e) {
