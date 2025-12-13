@@ -39,11 +39,15 @@ export const communityNode = async (state: MarketingOpsState) => {
          1. Create a "Client Mood" profile based on the comment.
          2. Select ONE card from AVAILABLE CARDS that fits or heals this mood.
          3. Generate a reply.
+
+         NOTE ON LANGUAGE:
+         - If the USER COMMENT is in Japanese, the "selected_card" must use the Japanese name ONLY (e.g., "The Fool (愚者)" -> "愚者").
+         - If the USER COMMENT is in Japanese, the "reply_text" must be in Japanese.
          
          IMPORTANT: Output ONLY a valid JSON object:
          {
            "mood_analysis": "string (The analyzed mood)",
-           "selected_card": "string (Exact name from the list)",
+           "selected_card": "string (Localized Card Name)",
            "reply_text": "string (The actual reply text for TikTok)",
            "reasoning": "string (Why this card?)"
          }
