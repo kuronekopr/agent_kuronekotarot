@@ -10,8 +10,13 @@ export const communityNode = async (state: MarketingOpsState) => {
     const systemPrompt = AGENT_C_COMMUNITY_PROMPT;
 
     // Check if we are in "Manual Reply Mode"
+    // Look for the original trigger message in history
+    const replyMessage = state.messages.find(m =>
+        m instanceof HumanMessage && typeof m.content === "string" && m.content.startsWith("Reply to:")
+    );
+
     const lastMessage = state.messages[state.messages.length - 1];
-    const content = typeof lastMessage.content === "string" ? lastMessage.content : "";
+    const lastContent = typeof lastMessage.content === "string" ? lastMessage.content : "";
 
     // 1. Tarot Selection Logic helpers
     const tarotListStr = TAROT_CARDS.join(", ");
@@ -21,7 +26,8 @@ export const communityNode = async (state: MarketingOpsState) => {
     // Otherwise standard community logic (mock UGC analysis).
     let userInstruction = "";
 
-    if (content.startsWith("Reply to:")) {
+    if (replyMessage) {
+        const content = (replyMessage.content as string);
         userInstruction = `
          TASK: Analyze the following user comment and generate a reply with a Tarot reading.
          
@@ -46,7 +52,7 @@ export const communityNode = async (state: MarketingOpsState) => {
         // Standard logic (fallback or generic UGC analysis)
         userInstruction = `
         Analyze the following UGC and generate a reply.
-        UGC: "${content}"
+        UGC: "${lastContent}"
         
         IMPORTANT: Output ONLY a valid JSON object:
         {
@@ -69,14 +75,15 @@ export const communityNode = async (state: MarketingOpsState) => {
 
         return {
             messages: [new AIMessage(JSON.stringify(parsed, null, 2))],
-            // We use 'community_content' to distinguish from creative posts
             community_content: JSON.stringify(parsed, null, 2),
             next: "supervisor",
         };
-    } catch (e) {
+    } catch (e: any) {
         console.error("Community Agent Error:", e);
+        const errorData = { reply_text: "Error: " + e.message, mood_analysis: "Error", selected_card: "Error" };
         return {
             messages: [new AIMessage("Error processing community task")],
+            community_content: JSON.stringify(errorData),
             next: "supervisor"
         };
     }

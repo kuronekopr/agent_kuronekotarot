@@ -20,6 +20,25 @@ export const supervisorNode = async (state: MarketingOpsState) => {
         return { next: "FINISH" };
     }
 
+    // CHECK FOR SHORTCUTS (Manual Triggers)
+    const firstMessage = state.messages.length > 0 ? state.messages[0] : null;
+    const firstContent = firstMessage && typeof firstMessage.content === "string" ? firstMessage.content : "";
+
+    // If the instruction is literally about "Reply to:", route to community directly.
+    if (firstContent.startsWith("Reply to:")) {
+        // Prevent infinite loop: If we already have the result, FINISH.
+        if (state.community_content) {
+            console.log("Supervisor: Reply Task completed, finishing.");
+            return { next: "FINISH" };
+        }
+
+        console.log("Supervisor: Detected Reply Task, routing to Community.");
+        return {
+            next: "community",
+            messages: [new AIMessage({ content: "[Supervisor]: Route to Community for Reply Task." })]
+        };
+    }
+
     // Fallback to JSON mode mainly for robustness against API strictness
     const response = await model.invoke([
         new SystemMessage(systemPrompt + "\n\nIMPORTANT: Respond ONLY with a valid JSON object. Format: { \"next\": \"creative\" | \"analyst\" | \"community\" | \"ads\" | \"FINISH\", \"comment\": \"reason...\" }"),

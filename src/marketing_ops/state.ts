@@ -18,6 +18,10 @@ export const MarketingOpsStateAnnotation = Annotation.Root({
         reducer: (x, y) => y ?? x,
         default: () => undefined,
     }),
+    community_content: Annotation<string | undefined>({
+        reducer: (x, y) => y ?? x,
+        default: () => undefined,
+    }),
     review_status: Annotation<string | undefined>({
         reducer: (x, y) => y ?? x,
         default: () => "pending",
