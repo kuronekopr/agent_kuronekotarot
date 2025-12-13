@@ -101,6 +101,7 @@ app.get("/", async (c) => {
         const interactionHtml = interactionRows.map((r: any) => `
             <tr>
                 <td>${r.id}</td>
+                <td>${new Date(r.created_at).toLocaleString()}</td>
                 <td>${r.mood || '-'}</td>
                 <td>${r.selected_card || '-'}</td>
                 <td>${r.user_comment}</td>
@@ -142,7 +143,7 @@ app.get("/", async (c) => {
                     
                     <h3>Recent Interactions</h3>
                     <table>
-                        <tr><th>ID</th><th>Mood</th><th>Card</th><th>User Comment</th><th>Generated Reply</th></tr>
+                        <tr><th>ID</th><th>Time</th><th>Mood</th><th>Card</th><th>User Comment</th><th>Generated Reply</th></tr>
                         ${interactionHtml}
                     </table>
                 </div>
