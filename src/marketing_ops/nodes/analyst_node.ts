@@ -1,12 +1,7 @@
 import { HumanMessage, SystemMessage, AIMessage } from "@langchain/core/messages";
 import { ChatOpenAI } from "@langchain/openai";
-import * as fs from "fs";
-import * as path from "path";
 import { MarketingOpsState } from "../state";
-
-const getPrompt = (filename: string) => {
-    return fs.readFileSync(path.join(__dirname, "../../marketing_ops/prompts", filename), "utf-8");
-};
+import { AGENT_B_ANALYST_PROMPT } from "../prompts";
 
 // 1. Define Input Data Structure (Simulating API response)
 interface MetricsData {
@@ -31,13 +26,13 @@ const fetchMockData = (): MetricsData => {
 // Agent B: Analyst Node
 export const analystNode = async (state: MarketingOpsState) => {
     const model = new ChatOpenAI({ model: "gpt-4o", temperature: 0 }); // Analytical
-    const systemPrompt = getPrompt("agent_b_analyst.md");
+    const systemPrompt = AGENT_B_ANALYST_PROMPT;
 
     // Fetch data
     const metrics = fetchMockData();
     const metricsStr = JSON.stringify(metrics, null, 2);
 
-    const jsonInstruction = `
+    const jsonInstruction = \`
     IMPORTANT: Use the provided METRICS DATA to generate a report.
     Output ONLY a valid JSON object matching this structure:
     {
@@ -46,17 +41,17 @@ export const analystNode = async (state: MarketingOpsState) => {
         "recommended_actions": ["Concrete marketing actions (string)"]
     }
     Do not wrap in markdown code blocks.
-    `;
+    \`;
 
     try {
         const response = await model.invoke([
             new SystemMessage(systemPrompt + jsonInstruction),
-            new HumanMessage(`以下のデータを分析してください:\n${metricsStr}`),
+            new HumanMessage(\`以下のデータを分析してください:\\n\${metricsStr}\`),
             ...state.messages
         ]);
 
         const text = typeof response.content === "string" ? response.content : "";
-        const cleanText = text.replace(/```json/g, "").replace(/```/g, "").trim();
+        const cleanText = text.replace(/\\\`\\\`\\\`json/g, "").replace(/\\\`\\\`\\\`/g, "").trim();
         const parsed = JSON.parse(cleanText);
 
         return {
