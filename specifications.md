@@ -8,7 +8,11 @@
 - **Cloudflare Workers**: サーバーレス環境での動作。
 - **Cron Trigger**: 毎日 09:00 (JST) に自動実行。
 - **D1 Database**: 成果物の永続化保存（`contents` テーブル）。
-- **Hono Dashboard**: ブラウザから成果物を確認・承認できる簡易管理画面。
+- **Dashboard**: New "Reply Generator" Form.
+    - **Refinement (v0.3.2)**: 
+        - Auto-translate Card Name to Japanese if input is Japanese.
+        - Add 'Created At' timestamp column.
+- **API**: `POST /api/reply`.
 
 ### 2. AIエージェント (Logic)
 - **LangGraph**: 複数のエージェントが連携するワークフロー。
@@ -22,10 +26,26 @@
 - **Community (広報)**:
     - ユーザーコメントの分析と返信案作成。
     - **機能**: 感情分析 (Positive/Negative) と リスクスコア判定 (1-10)。
+    - **Manual Reply**: TikTokコメントを入力して、ムードに合わせたタロットカードと返信を生成。
 
 ### 3. 運用フロー
 - 生成されたコンテンツは `status: pending` としてDBに保存。
 - 管理画面で「Approve」ボタンを押すと `status: approved` に更新。
+
+---
+
+## 📈 Social Media Strategy (Phase 1: 0-1000 Followers)
+- **Goal**: Reach 1000 followers to unlock bio links.
+- **Tactic**: "Participatory" content. Encourage comments to trigger AI replies.
+- **Profile Bio**: 「黒猫タロット【気分AIマジカルナビ】AI黒猫があなたをはみだし思考へ🌙 今のお気分をコメントすると、🐈‍⬛AI占いもらえるかも？」
+- **Content Strategy (The Golden Format)**:
+    - **Structure (15-25s)**:
+        1.  **Hook (0-3s)**: Dissonance/Question (e.g., "Tired of correct answers?").
+        2.  **Worldview (3-6s)**: "This is Black Cat Tarot. Reading off-beat thoughts from moods."
+        3.  **Card Reveal (6-15s)**: "Today's card is [Card Name]."
+        4.  **Insight (15-20s)**: Short, non-assertive insight. "Maybe you're protecting too much."
+        5.  **CTA (20-25s)**: "Leave your mood in comments. I might pull a card for you."
+- **Visuals**: Black screen/Purple text/Moon icon. Simple, distinct style.
 
 ---
 

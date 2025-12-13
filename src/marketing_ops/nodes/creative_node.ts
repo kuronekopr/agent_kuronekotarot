@@ -18,7 +18,7 @@ export const creativeNode = async (state: MarketingOpsState) => {
       "platform": "tiktok" | "instagram" | "x",
       "title": "string",
       "content": "string",
-      "script": [ { "speaker": "string", "text": "string" } ] (optional, for tiktok),
+      "script": "string" (A single consolidated text block for TTS reading, including all lines joined by newlines),
       "visual_description": "string" (optional),
       "hashtags": ["string"]
     }
