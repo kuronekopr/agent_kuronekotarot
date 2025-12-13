@@ -12,7 +12,7 @@ export const creativeNode = async (state: MarketingOpsState) => {
     const systemPrompt = AGENT_A_CREATIVE_PROMPT;
     const lastMessage = state.messages[state.messages.length - 1];
 
-    const jsonInstruction = \`
+    const jsonInstruction = `
     IMPORTANT: Output ONLY a valid JSON object matching this structure:
     {
       "platform": "tiktok" | "instagram" | "x",
@@ -23,7 +23,7 @@ export const creativeNode = async (state: MarketingOpsState) => {
       "hashtags": ["string"]
     }
     Do not wrap in markdown code blocks.
-    \`;
+    `;
 
     try {
         const response = await model.invoke([
@@ -32,7 +32,7 @@ export const creativeNode = async (state: MarketingOpsState) => {
         ]);
 
         const text = typeof response.content === "string" ? response.content : "";
-        const cleanText = text.replace(/\\\`\\\`\\\`json/g, "").replace(/\\\`\\\`\\\`/g, "").trim();
+        const cleanText = text.replace(/```json/g, "").replace(/```/g, "").trim();
         const parsed = JSON.parse(cleanText);
 
         return {

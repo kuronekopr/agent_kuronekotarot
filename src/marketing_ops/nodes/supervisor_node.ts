@@ -22,7 +22,7 @@ export const supervisorNode = async (state: MarketingOpsState) => {
 
     // Fallback to JSON mode mainly for robustness against API strictness
     const response = await model.invoke([
-        new SystemMessage(systemPrompt + "\\n\\nIMPORTANT: Respond ONLY with a valid JSON object. Format: { \"next\": \"creative\" | \"analyst\" | \"community\" | \"ads\" | \"FINISH\", \"comment\": \"reason...\" }"),
+        new SystemMessage(systemPrompt + "\n\nIMPORTANT: Respond ONLY with a valid JSON object. Format: { \"next\": \"creative\" | \"analyst\" | \"community\" | \"ads\" | \"FINISH\", \"comment\": \"reason...\" }"),
         ...state.messages,
         new HumanMessage("状況を確認し、次の指示を出してください。もし十分ならFINISHとしてください。")
     ]);
@@ -31,7 +31,7 @@ export const supervisorNode = async (state: MarketingOpsState) => {
     try {
         const text = typeof response.content === "string" ? response.content : "";
         // Remove markdown code blocks if present
-        const jsonText = text.replace(/\\\`\\\`\\\`json/g, "").replace(/\\\`\\\`\\\`/g, "").trim();
+        const jsonText = text.replace(/```json/g, "").replace(/```/g, "").trim();
         parsed = JSON.parse(jsonText);
     } catch (e) {
         console.error("JSON Parse Error", e);
@@ -40,6 +40,6 @@ export const supervisorNode = async (state: MarketingOpsState) => {
 
     return {
         next: parsed.next || "FINISH",
-        messages: [new AIMessage({ content: \`[Supervisor]: \${parsed.next} - \${parsed.comment || ''}\` })]
+        messages: [new AIMessage({ content: `[Supervisor]: ${parsed.next} - ${parsed.comment || ''}` })]
     };
 };

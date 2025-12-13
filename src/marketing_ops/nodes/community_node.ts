@@ -12,7 +12,7 @@ export const communityNode = async (state: MarketingOpsState) => {
     const lastMessage = state.messages[state.messages.length - 1];
     const inputContent = typeof lastMessage.content === "string" ? lastMessage.content : "ユーザー投稿: 『今日黒猫タロット引いたら死神だった...怖』";
 
-    const jsonInstruction = \`
+    const jsonInstruction = `
     IMPORTANT: Analyze the user input and output ONLY a valid JSON object matching this structure:
     {
       "sentiment": "positive" | "neutral" | "negative" | "emergency",
@@ -22,17 +22,17 @@ export const communityNode = async (state: MarketingOpsState) => {
     }
     If risk_score is >= 8, draft_reply should be a supportive, safety-first message (or suggestion to seek help), avoiding playful tone.
     Do not wrap in markdown code blocks.
-    \`;
+    `;
 
     try {
         const response = await model.invoke([
             new SystemMessage(systemPrompt + jsonInstruction),
-            new HumanMessage(\`以下のUGCを分析し、返信を作成してください: \${inputContent}\`),
+            new HumanMessage(`以下のUGCを分析し、返信を作成してください: ${inputContent}`),
             ...state.messages
         ]);
 
         const text = typeof response.content === "string" ? response.content : "";
-        const cleanText = text.replace(/\\\`\\\`\\\`json/g, "").replace(/\\\`\\\`\\\`/g, "").trim();
+        const cleanText = text.replace(/```json/g, "").replace(/```/g, "").trim();
         const parsed = JSON.parse(cleanText);
 
         return {
