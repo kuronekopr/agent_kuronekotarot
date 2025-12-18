@@ -4,7 +4,7 @@
         "id": "black-cat-tarot-agent",
         "name": "Black Cat Tarot Agent (黒猫タロット)",
         "description": "An entertainment AI agent where a whimsical black cat whispers unconventional insights based on your mood and tarot cards. It provides 'out-of-the-box' perspectives rather than correct answers.\n(今の気分とタロットカードから、黒猫が少しズレた視点（はみだし思考）を囁くエンターテインメント向けAIエージェント。)",
-        "version": "1.0.0",
+        "version": "0.4.1",
         "author": "Black Cat Tarot Team",
         "homepage_url": "https://kuronekotarot.pages.dev",
         "tags": [
