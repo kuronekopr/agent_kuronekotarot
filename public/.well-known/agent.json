@@ -1,0 +1,76 @@
+{
+    "spec_version": "1.0.0",
+    "agent": {
+        "id": "black-cat-tarot-agent",
+        "name": "Black Cat Tarot Agent (黒猫タロット)",
+        "description": "An entertainment AI agent where a whimsical black cat whispers unconventional insights based on your mood and tarot cards. It provides 'out-of-the-box' perspectives rather than correct answers.\n(今の気分とタロットカードから、黒猫が少しズレた視点（はみだし思考）を囁くエンターテインメント向けAIエージェント。)",
+        "version": "1.0.0",
+        "author": "Black Cat Tarot Team",
+        "homepage_url": "https://kuronekotarot.pages.dev",
+        "tags": [
+            "tarot",
+            "mood-ai",
+            "creative-thinking",
+            "entertainment"
+        ]
+    },
+    "capabilities": [
+        {
+            "name": "mood_tarot_insight",
+            "description": "Analyzes the user's current mood and reflects it on a tarot card to provide a whimsical, slightly cynical yet warm message from a black cat's perspective.\n(ユーザーの『今の気分』とタロットカードを読み解き、黒猫の視点から少し皮肉で温かい言葉を返す。)",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "mood": {
+                        "type": "string",
+                        "description": "User's current mood (free text). e.g., 'Feeling tired from work'. (ユーザーの今の気分)"
+                    },
+                    "card": {
+                        "type": "string",
+                        "description": "Specific tarot card name (optional). If omitted, a card is drawn randomly.",
+                        "nullable": true
+                    },
+                    "language": {
+                        "type": "string",
+                        "enum": [
+                            "ja",
+                            "en"
+                        ],
+                        "default": "ja"
+                    }
+                },
+                "required": [
+                    "mood"
+                ]
+            },
+            "examples": [
+                {
+                    "input": {
+                        "mood": "なんとなく仕事に疲れている",
+                        "language": "ja"
+                    },
+                    "output": {
+                        "card_used": "吊るされた男 (The Hanged Man)",
+                        "message": "動けない夜ほど、世界は裏返って見える。今日は無理に進まなくていい。逆さまの景色も、悪くない。"
+                    }
+                }
+            ]
+        }
+    ],
+    "interfaces": {
+        "http": {
+            "base_url": "https://kuronekotarot.pages.dev/api",
+            "endpoints": {
+                "mood_tarot_insight": {
+                    "method": "POST",
+                    "path": "/insight",
+                    "description": "Generates insight based on mood."
+                }
+            }
+        }
+    },
+    "usage_notes": {
+        "disclaimer": "This agent is for entertainment purposes only and does not guarantee decision-making or problem-solving. (本エージェントはエンターテインメント用途です。)",
+        "character_note": "The Black Cat does not give 'correct' advice; it gives 'shifted' perspectives. (黒猫は正論を言いません。ズラします。)"
+    }
+}
